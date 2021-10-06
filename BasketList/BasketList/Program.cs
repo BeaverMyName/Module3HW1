@@ -23,6 +23,12 @@ namespace BasketList
 
             DisplayBasket(basket);
 
+            var list = new List<int>(new int[] { 77, 88, 99 });
+
+            basket.AddRange(list);
+
+            DisplayBasket(basket);
+
             basket.Remove(22);
 
             DisplayBasket(basket);

@@ -140,6 +140,18 @@ namespace BasketList.Collections
             CopyTo(array, _count);
         }
 
+        public void AddRange(IList<T> array)
+        {
+            CheckSpace(array.Count + _count);
+
+            for (var i = _count; i < array.Count + _count; i++)
+            {
+                _array[i] = array[i - _count];
+            }
+
+            _count += array.Count;
+        }
+
         public void CopyTo(T[] array, int index)
         {
             if (index > _count)
@@ -147,7 +159,7 @@ namespace BasketList.Collections
                 throw new ArgumentOutOfRangeException();
             }
 
-            CheckSpace(array.Length);
+            CheckSpace(array.Length + index);
 
             for (var i = array.Length + _count; i >= 0; i--)
             {
