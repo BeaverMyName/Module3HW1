@@ -8,17 +8,15 @@ using BasketList.Comparers;
 
 namespace BasketList.Collections
 {
-    public class Basket<T> : IList<T>
+    public class Basket<T> : IEnumerable<T>
     {
         private T[] _array;
         private int _count;
-        private IComparer<T> _comparer;
 
         public Basket()
         {
             _count = 0;
             _array = new T[1];
-            _comparer = new DefaultComparer<T>();
         }
 
         public int Count
@@ -29,31 +27,17 @@ namespace BasketList.Collections
             }
         }
 
-        public bool IsReadOnly
-        {
-            get
-            {
-                return _array.IsReadOnly;
-            }
-        }
-
         public T this[int index]
         {
             get
             {
-                if (index > _count - 1)
-                {
-                    throw new IndexOutOfRangeException();
-                }
+                CheckIndexOutOfRangeException(index);
 
                 return _array[index];
             }
             set
             {
-                if (index > _count - 1)
-                {
-                    throw new IndexOutOfRangeException();
-                }
+                CheckIndexOutOfRangeException(index);
 
                 _array[index] = value;
             }
@@ -81,10 +65,7 @@ namespace BasketList.Collections
 
         public void Insert(int index, T item)
         {
-            if (index > _count)
-            {
-                throw new ArgumentOutOfRangeException();
-            }
+            CheckArgumentOutOfRangeException(index);
 
             CheckSpace();
 
@@ -107,25 +88,20 @@ namespace BasketList.Collections
 
         public void RemoveAt(int index)
         {
-            if (index > _count)
-            {
-                throw new ArgumentOutOfRangeException();
-            }
+            CheckArgumentOutOfRangeException(index);
 
             for (var i = index; i < _count - 1; i++)
             {
                 _array[i] = _array[i + 1];
             }
 
-            _array[--_count] = default(T);
+            _count--;
+            _array[_count] = default(T);
         }
 
         public void Clear()
         {
-            for (var i = 0; i < _count; i++)
-            {
-                _array[i] = default(T);
-            }
+            _array = new T[0];
 
             _count = 0;
         }
@@ -142,7 +118,7 @@ namespace BasketList.Collections
 
         public void AddRange(IList<T> array)
         {
-            CheckSpace(array.Count + _count);
+            CheckSpace(array.Count);
 
             for (var i = _count; i < array.Count + _count; i++)
             {
@@ -154,12 +130,8 @@ namespace BasketList.Collections
 
         public void CopyTo(T[] array, int index)
         {
-            if (index > _count)
-            {
-                throw new ArgumentOutOfRangeException();
-            }
-
-            CheckSpace(array.Length + index);
+            CheckArgumentOutOfRangeException(index);
+            CheckSpace(array.Length);
 
             for (var i = array.Length + _count; i >= 0; i--)
             {
@@ -178,36 +150,24 @@ namespace BasketList.Collections
 
         public bool Remove(T item)
         {
-            var founded = false;
+            var index = IndexOf(item);
 
-            for (var i = 0; i < _count - 1; i++)
+            if (index != -1)
             {
-                if (_array[i].Equals(item))
-                {
-                    founded = true;
-                }
-
-                if (founded)
-                {
-                    _array[i] = _array[i + 1];
-                }
+                RemoveAt(index);
+                return true;
             }
 
-            if (founded)
-            {
-                _array[--_count] = default(T);
-            }
-
-            return founded;
+            return false;
         }
 
-        public void Sort()
+        public void Sort(IComparer<T> comparer)
         {
             for (var i = 0; i < _count; i++)
             {
                 for (var j = i; j < _count; j++)
                 {
-                    if (_comparer.Compare(_array[i], _array[j]) == 1)
+                    if (comparer.Compare(_array[i], _array[j]) == 1)
                     {
                         (_array[i], _array[j]) = (_array[j], _array[i]);
                     }
@@ -239,11 +199,27 @@ namespace BasketList.Collections
                 }
 
                 _array = temp;
-            }
 
-            if (_array.Length <= _count + amount)
+                if (_array.Length <= _count + amount)
+                {
+                    CheckSpace(amount);
+                }
+            }
+        }
+
+        private void CheckArgumentOutOfRangeException(int index)
+        {
+            if (index > _count)
             {
-                CheckSpace(amount);
+                throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        private void CheckIndexOutOfRangeException(int index)
+        {
+            if (index > _count - 1)
+            {
+                throw new IndexOutOfRangeException();
             }
         }
     }

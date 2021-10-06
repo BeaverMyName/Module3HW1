@@ -6,15 +6,15 @@ using System.Threading.Tasks;
 
 namespace BasketList.Comparers
 {
-    public class DefaultComparer<T> : IComparer<T>
+    public class DefaultComparer : IComparer<int>
     {
-        public int Compare(T first, T second)
+        public int Compare(int first, int second)
         {
-            if (first.GetHashCode() > second.GetHashCode())
+            if (first > second)
             {
                 return 1;
             }
-            else if (first.GetHashCode() == second.GetHashCode())
+            else if (first == second)
             {
                 return 0;
             }

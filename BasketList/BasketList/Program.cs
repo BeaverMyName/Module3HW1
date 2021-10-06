@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using BasketList.Collections;
+using BasketList.Comparers;
 
 namespace BasketList
 {
@@ -37,7 +38,7 @@ namespace BasketList
 
             DisplayBasket(basket);
 
-            basket.Sort();
+            basket.Sort(new DefaultComparer());
 
             DisplayBasket(basket);
         }
