@@ -112,12 +112,9 @@ namespace BasketList.Collections
                 throw new ArgumentOutOfRangeException();
             }
 
-            for (var i = 0; i < _count; i++)
+            for (var i = index; i < _count - 1; i++)
             {
-                if (i >= index && i != _count - 1)
-                {
-                    _array[i] = _array[i + 1];
-                }
+                _array[i] = _array[i + 1];
             }
 
             _array[--_count] = default(T);
